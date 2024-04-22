@@ -1,0 +1,53 @@
+﻿@page "/reverseAString"
+@using System.Text.RegularExpressions
+
+<h3>ReverseAString</h3>
+
+<div class="vstack gap-3">
+    <InputText class="form-control" placeholder="Enter a String to Reverse" @bind-Value="message" />
+    <button class="btn btn-primary" @onclick=ReverseMe>Reverse Me</button>
+
+    @if (reversedMessage != "")
+    {
+        if (isPalindrome)
+        {
+            <Message Title="Is a Palindrome" DisplayMessage="@longMessage" cssClass="alert-success" />
+        }
+        else
+        {
+            <Message Title="Not a Palindrome" DisplayMessage="@longMessage" cssClass="alert-danger" />
+        }
+    }
+
+
+</div>
+
+@code {
+    //private fields to store the message, reversed message
+    private string message = "Hello, World";
+    private string reversedMessage = "";
+    private bool isPalindrome = false;
+    private string longMessage = "";
+
+    private void ReverseMe()
+    {
+        reversedMessage = "";
+        //use regex to remove spaces
+        string cleanMessage = Regex.Replace(message, "[^a-zA-Z0-9]", "").ToLower();
+        for (int i = cleanMessage.Length - 1; i >= 0; i--)
+        {
+            reversedMessage += cleanMessage[i];
+        }
+
+        if (cleanMessage == reversedMessage)
+        {
+            isPalindrome = true;
+            longMessage = $"{message} is a Palindrome";
+        }
+        else
+        {
+            isPalindrome = false;
+            longMessage = $"{message} is not a Palindrome";
+        }
+    }
+}

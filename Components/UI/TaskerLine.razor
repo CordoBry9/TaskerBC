@@ -1,0 +1,41 @@
+﻿@if (Todo is not null)
+{
+    <div class="hstack gap-2 align-items-center">
+
+        <div>
+            <InputCheckbox @bind-Value="Todo.IsComplete" 
+            class="form-check-input" @bind-Value:after="UpdateTodo"></InputCheckbox>
+        </div>
+        <div class="flex-grow-1 @(Todo.IsComplete == true ? "text-decoration-line-through" : "")"> @*ternary statement*@
+            @Todo.Name
+        </div>
+        <div>
+            <button class="btn btn-danger" @onclick="DeleteTodo">
+                <i class="bi bi-trash-fill"></i>
+            </button>
+        </div>
+
+    </div>
+}
+@code {
+
+    [Parameter, EditorRequired]
+    public TaskerItem? Todo { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback<TaskerItem> OnDelete { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback<TaskerItem> OnUpdate { get; set; }
+
+    private async Task DeleteTodo()
+    {
+        await OnDelete.InvokeAsync(Todo);
+    }
+
+    private async Task UpdateTodo() //ask chatgpt or youtube how async works
+    {
+        await OnUpdate.InvokeAsync(Todo);
+    }
+}
+

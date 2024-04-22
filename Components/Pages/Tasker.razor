@@ -1,0 +1,81 @@
+﻿@page "/tasker"
+@using System.Text.Json
+@using TaskerBC.Services
+@inject TaskerItemService TaskerService
+
+<div class="d-flex justify-content-center align-items-center">
+    <div class="task p-5">
+
+        <div class="p-2 text-center">
+            <img src="/img/Tasker_600.png" width=300px height="auto" class="py-3" />
+
+
+            <EditForm Model="formTaskerItem" OnSubmit="AddTaskerItem">
+                <div class="hstack gap-2">
+                    <InputText class="form-control"
+                               placeholder="Enter a task"
+                               @bind-Value="@formTaskerItem.Name"
+                               @ref="formInput">
+                    </InputText>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </div>
+            </EditForm>
+        </div>
+        <hr />
+        <div class="vstack gap-3">
+
+            @foreach (TaskerItem item in taskerItems)
+            {
+                <TaskerLine Todo="item" OnDelete="DeleteTaskerItem" 
+                    OnUpdate="SaveTaskerItems"></TaskerLine>
+            }
+        </div>
+    </div>
+</div>
+
+
+@code {
+    private InputText? formInput;
+    private TaskerItem formTaskerItem = new TaskerItem(); //object is an instance of a class
+    private List<TaskerItem> taskerItems = new List<TaskerItem>();//new instance (object) of the taskeritem class
+    protected override async Task OnInitializedAsync() //ask what happens if u delete it these top two only happens when you first go to the page
+    {
+        await GetTaskerItems();
+    }                                                               
+    private async Task AddTaskerItem()
+    {
+        formTaskerItem.Id = Guid.NewGuid();
+
+        taskerItems.Add(formTaskerItem);
+
+        formTaskerItem = new TaskerItem(); //instantiating a new object to use later 
+
+
+        //save the list to local storage
+        await SaveTaskerItems();
+
+        //puts text cursor back on input box (not working atm) if mot null
+        if (formInput?.Element is not null)
+        {
+            await formInput.Element.Value.FocusAsync();
+
+        }
+    }
+    //google abstraction and polymorphism, method overload
+    private async Task DeleteTaskerItem(TaskerItem taskerItem)
+    {
+        taskerItems.Remove(taskerItem);
+
+        await SaveTaskerItems();
+    }
+
+    private async Task SaveTaskerItems()
+    {
+        await TaskerService.SaveTaskerItems(taskerItems);
+    }
+
+    private async Task GetTaskerItems()
+    {
+        taskerItems = await TaskerService.GetTaskerItems();
+    }
+}
