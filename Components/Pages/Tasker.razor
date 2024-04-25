@@ -1,7 +1,10 @@
 ﻿@page "/tasker"
 @using System.Text.Json
+@using Microsoft.AspNetCore.Authorization
 @using TaskerBC.Services
 @inject TaskerItemService TaskerService
+@attribute [Authorize]
+
 
 <div class="d-flex justify-content-center align-items-center">
     <div class="task p-5">

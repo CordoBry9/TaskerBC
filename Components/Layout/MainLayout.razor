@@ -1,4 +1,15 @@
 ﻿@inherits LayoutComponentBase
+@inject NavigationManager Nav
+@inject TokenProvider TokenProvider
+
+@code {
+    private async Task LogoutAsync()
+    {
+        await TokenProvider.ClearToken();
+        Nav.NavigateTo("/", true);
+    }
+}
+
 <div class="page">
     <div class="sidebar">
         <NavMenu />
@@ -6,7 +17,20 @@
 
     <main>
         <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+            <AuthorizeView>
+
+                <Authorized>
+                    @context.User.Identity?.Name
+                    <button class="btn btn-link" @onclick="LogoutAsync">Log Out</button>
+                </Authorized>
+
+                <NotAuthorized>
+                    <a href="login">Login</a>
+                    
+                    <a href="register">Register</a>
+                </NotAuthorized>
+
+            </AuthorizeView>
         </div>
 
         <article class="content px-4">

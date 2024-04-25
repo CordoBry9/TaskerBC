@@ -1,0 +1,64 @@
+﻿@page "/login"
+
+@using TaskerBC.Models.Auth
+@using TaskerBC.Services
+
+@inject NavigationManager Nav
+@inject TaskerItemService TaskerService
+
+
+<div class="container">
+    <div class="d-flex justify-content-center align-items-center">
+        <div class="card">
+            <div class="header text-center mt-3">
+                <h3>Login</h3>
+            </div>
+            <div class="card-body">
+                <EditForm Model="loginRequest" class="vstack gap-3" OnValidSubmit="LoginUser">
+                    <DataAnnotationsValidator />
+                    <label class="form-label">
+                        Email
+                        <InputText @bind-Value="loginRequest.Email" class="form-control"></InputText>
+                        <ValidationMessage For="() => loginRequest.Email"></ValidationMessage>
+                    </label>
+                    <label class="form-label">
+                        Password
+                        <InputText @bind-Value="loginRequest.Password" type="password" class="form-control"></InputText>
+                        <ValidationMessage For="() => loginRequest.Password"></ValidationMessage>
+                    </label>
+                    <div class="d-flex justify-content-evenly">
+                        <button class="btn btn-primry" type="submit">Login</button>
+                        <a href="register" class="btn btn-outline-secondary">Register</a>
+                    </div>
+                </EditForm>
+            </div>
+            <div>
+                <div class="text-center text-danger mt-4">
+                    @errorMessage
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    private LoginRequest loginRequest = new LoginRequest();
+    private string errorMessage = string.Empty;
+
+    private async Task LoginUser()
+    {
+        errorMessage = string.Empty;
+
+        bool success = await TaskerService.LoginAsync(loginRequest);
+
+        if (success == true)
+        {
+            Nav.NavigateTo("/", true);
+        }
+        else
+        {
+            errorMessage = "Login failed. Please check your email and password before trying again.";
+        }
+    }
+}
